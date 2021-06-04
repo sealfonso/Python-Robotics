@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+import pygame #pip3 install pygame
+import rospy
+import sys
+import numpy as np
+import cv2
+from threading import Thread
+import time
+from std_msgs.msg import String
+from tkinter import * #sudo apt-get install python3-tk
+from std_msgs.msg import Float32MultiArray
+from rospy.numpy_msg import numpy_msg
+from cv_bridge import CvBridge
+import matplotlib.pyplot as plt
+import os
+import sys
+import roslib
+from sensor_msgs.msg import CompressedImage
+
+vel = Float32MultiArray()
+
+
+
+pub1 = rospy.Publisher("/pioneer_motorsVel", Float32MultiArray, queue_size=10)
+
+def Control_Vel():
+    global vel
+    vel.data=[0,0]
+    try:
+        rate=rospy.Rate(100)
+        while not rospy.is_shutdown():
+            vel.data=[0, 0]
+            if input() == 'w':
+                vel.data = [5,5]
+            if input() == 's':
+                vel.data = [0,0]
+            if input() == 'a':
+                vel.data = [-5,5]
+            if input() == 'd':
+                vel.data = [5,-5]
+            if input() == 'x':
+                vel.data = [-5,-5]
+            pub1.publish(vel)
+
+    except rospy.ServiceException as e:
+        print("Error!")
+
+
+if __name__=='__main__':
+
+    rospy.init_node('pioneer_teleop_key', anonymous=True)
+    try:
+        Control_Vel()
+
+    except rospy.ROSInterruptException:
+        pass
